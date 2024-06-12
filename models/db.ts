@@ -9,6 +9,7 @@ const usersSignUpInfoSchema = new mongoose.Schema({
 
 
 const employeesTaskSchema = new mongoose.Schema({
+    uid:String,
     name:String,
     emailId:{
         type:[String],

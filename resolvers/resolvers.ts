@@ -1,7 +1,7 @@
 import db from "../fakeData";
 import mongoose from "mongoose"
 // comn usersSignUpInfoTable from "../models/db"
-const { usersSignUpInfoTable,employeesTaskTable } = require("../models/db")
+const { usersSignUpInfoTable, employeesTaskTable } = require("../models/db")
 
 mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
     // console.log(res);
@@ -9,12 +9,12 @@ mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb
 
 export const resolvers = {
     Query: {
-        getUser(parent: any, args: any, context: any) {
-
-            return db.UserList
+        async fetchEmployeesTaskDetails(parent: any, args: any, context: any) {
+            const employeesDetails = await employeesTaskTable.find();
+            return employeesDetails
         },
-        async fetchEmailUsersIds(parent: any, args: any, context: any){
-            const users = await usersSignUpInfoTable.find() 
+        async fetchEmailUsersIds(parent: any, args: any, context: any) {
+            const users = await usersSignUpInfoTable.find()
             console.log(parent)
             return users
         }
@@ -35,19 +35,32 @@ export const resolvers = {
 
         },
 
-        createUserLogin(parent: any, args: any, context: any){
+        createUserLogin(parent: any, args: any, context: any) {
             console.log(args)
-            const checkExistingEmailId = usersSignUpInfoTable.find({emailId:args.emailId}) 
-            if(checkExistingEmailId.length > 0){
+            const checkExistingEmailId = usersSignUpInfoTable.find({ emailId: args.emailId })
+            if (checkExistingEmailId.length > 0) {
                 return "Already Exist"
-            }else{
-                return "Success" 
+            } else {
+                return "Success"
             }
         },
-        createEmployeesTask(parent: any, args: any, context: any){
-            console.log(args)
-           return employeesTaskTable.insertMany({...args.employeesTaskParameters})
+        createEmployeesTask(parent: any, args: any, context: any) {
+            // console.log(args)
+            return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
+        },
+
+
+       async deleteEmployeesTask(parent: any, args: any, context: any) {
+            console.log(args.employeeUidParameter.uid)
+            const deleteElement = await employeesTaskTable.deleteOne({uid:args.employeeUidParameter.uid}) 
+            return [args]
+        },
+        async editEmployeesTask(parent: any, args: any, context: any) {
+            console.log(args);
+            const updateElement = await employeesTaskTable.updateOne({uid:args.editEmployeesTaskParameter.uid},{$set:{...args.editEmployeesTaskParameter}}) 
+            return [args]
         }
+
     }
 }
 
