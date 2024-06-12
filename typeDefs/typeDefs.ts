@@ -35,10 +35,17 @@ taskDesc:String
 deadLine:String
 }
 
+type LoginResponse{
+ success: Boolean!
+  message: String
+}
+
 type Query{
 getUser:[signUpTable]
 fetchEmailUsersIds:[signUpTable]
 fetchEmployeesTaskDetails:[employeesTaskTable]
+showAllEmployee:[signUpTable]
+
 }
 
 input deleteEmployeesTaskInput{
@@ -55,7 +62,7 @@ deadLine:String
 
 type Mutation{
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):signUpTable
-createUserLogin(userLoginParameters:createLoginInput!):signUpTable
+createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!
 createEmployeesTask(employeesTaskParameters:createEmployeesTaskInput!):employeesTaskTable
 deleteEmployeesTask(employeeUidParameter:deleteEmployeesTaskInput!):[employeesTaskTable]
 editEmployeesTask(editEmployeesTaskParameter:editEmployeesTaskInput!):[employeesTaskTable]
