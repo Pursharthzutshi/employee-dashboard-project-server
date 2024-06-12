@@ -2,6 +2,11 @@ import db from "../fakeData";
 import mongoose from "mongoose"
 // comn usersSignUpInfoTable from "../models/db"
 const { usersSignUpInfoTable, employeesTaskTable } = require("../models/db")
+import jwt from 'jsonwebtoken';
+
+import crypto from "crypto"
+
+const secret = crypto.randomBytes(64).toString('hex');
 
 mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
     // console.log(res);
@@ -10,7 +15,7 @@ mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb
 export const resolvers = {
     Query: {
 
-        
+
         async fetchEmployeesTaskDetails(parent: any, args: any, context: any) {
             const employeesDetails = await employeesTaskTable.find();
             return employeesDetails
@@ -21,7 +26,7 @@ export const resolvers = {
             return users
         },
 
-        async showAllEmployee(parent: any, args: any, context: any){
+        async showAllEmployee(parent: any, args: any, context: any) {
             const allEmployees = await usersSignUpInfoTable.find();
             return allEmployees
         }
@@ -42,24 +47,49 @@ export const resolvers = {
 
         },
 
-        createUserLogin(parent: any, args: any, context: any) {
+        async createUserLogin(parent: any, args: any, context: any) {
             console.log(args)
 
-            const checkExistingEmailId = usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
-            console.log(args.userLoginParameters.emailId)
-            console.log(checkExistingEmailId)
-            if (checkExistingEmailId.length >0) {
-                return {
-                    success: true,
-                    message: 'User loggedin successfully',
-                }
-               
-            } else {
+            const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
+
+            const user = await usersSignUpInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
+            console.log(user)
+            // const token = jwt.sign({userId:user._id})
+            // const token = jwt.sign(
+
+            //     // { userId: user._id, email: user.emailId },
+            //     // secret,
+            //     // { expiresIn: process.env.TOKEN_EXPIRY_TIME }
+            //     { userId: user._id, email: user.emailId },
+            //     secret,
+            //     { expiresIn: "5h" }
+            // );
+            // return {
+            //     token: token,
+            //     success: true,
+            //     message: 'User loggedin successfully',
+            // }
+            if (!user) {
+
                 return {
                     success: false,
                     message: 'User Email Id does not exists',
                 }
             }
+
+            const token = jwt.sign(
+
+                { userId: user._id, email: user.emailId },
+                secret,
+                { expiresIn: "5h" }
+            );
+            return {
+                token: token,
+                success: true,
+                message: 'User loggedin successfully',
+            }
+
+
         },
         createEmployeesTask(parent: any, args: any, context: any) {
             // console.log(args)

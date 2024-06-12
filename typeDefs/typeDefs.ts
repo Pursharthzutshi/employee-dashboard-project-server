@@ -37,7 +37,8 @@ deadLine:String
 
 type LoginResponse{
  success: Boolean!
-  message: String
+ message: String
+ token:String
 }
 
 type Query{
