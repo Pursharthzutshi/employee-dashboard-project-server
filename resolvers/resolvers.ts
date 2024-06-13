@@ -5,6 +5,7 @@ const { usersSignUpInfoTable, employeesTaskTable } = require("../models/db")
 import jwt from 'jsonwebtoken';
 
 import crypto from "crypto"
+import { PubSub } from "graphql-subscriptions";
 
 const secret = crypto.randomBytes(64).toString('hex');
 
@@ -29,12 +30,17 @@ export const resolvers = {
         async showAllEmployee(parent: any, args: any, context: any) {
             const allEmployees = await usersSignUpInfoTable.find();
             return allEmployees
-        }
+        },
 
+        // async genderTypeChartDataCount(parent: any, args: any, context: any){
+        //     const totalGenders = await usersSignUpInfoTable.find();
+        //     return totalGenders;
+        // }
+        
     },
     Mutation: {
         createUserSignUp(parent: any, args: any, context: any) {
-
+            console.log(args)
             if (args.userEmailPassword !== args.userEmailPassword) {
                 return "Sign Up not suscessful"
             } else {
@@ -92,7 +98,7 @@ export const resolvers = {
 
         },
         createEmployeesTask(parent: any, args: any, context: any) {
-            // console.log(args)
+            console.log(args)
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 
@@ -108,6 +114,13 @@ export const resolvers = {
             return [args]
         }
 
+    },
+    Subscription:{
+        showAllEmployee:{
+            subscribe:()=>{
+                return (PubSub as any).asyncIterator(`messageAdded`);
+            }
+        },
     }
 }
 

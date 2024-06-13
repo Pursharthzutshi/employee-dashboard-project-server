@@ -5,6 +5,7 @@ type signUpTable {
 name:String
 emailId:String
 password:String
+genderType:String
 }
 
 type employeesTaskTable{
@@ -20,6 +21,7 @@ uid:ID!
 name:String
 emailId:String
 password:String
+genderType:String
 }
 
 input createLoginInput{
@@ -49,6 +51,11 @@ showAllEmployee:[signUpTable]
 
 }
 
+type Subscription{
+    showAllEmployee:signUpTable
+}
+
+
 input deleteEmployeesTaskInput{
 uid:ID!
 }
@@ -60,6 +67,7 @@ emailId:[String]
 taskDesc:String
 deadLine:String
 }
+
 
 type Mutation{
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):signUpTable

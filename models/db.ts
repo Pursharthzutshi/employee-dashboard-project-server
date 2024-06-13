@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 const usersSignUpInfoSchema = new mongoose.Schema({
     name:String,
     emailId:String,
-    password:String
+    password:String,
+    genderType:String
 })
 
 
