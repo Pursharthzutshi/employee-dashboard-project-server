@@ -41,16 +41,18 @@ export const resolvers = {
     Mutation: {
         createUserSignUp(parent: any, args: any, context: any) {
             console.log(args)
-            if (args.userEmailPassword !== args.userEmailPassword) {
-                return "Sign Up not suscessful"
-            } else {
-                usersSignUpInfoTable.insertMany({ ...args.userSignUpParameters })
-                // context.res.send("Send")
-                return "Sign Up suscessful"
+            // if (args.userEmailPassword === "") {
+            //     return {
+            //         success:false,
+            //         message:"Sign Up was not suscessful"
+            //     }
+            // } 
+            usersSignUpInfoTable.insertMany({ ...args.userSignUpParameters })
+            // context.res.send("Send")
+            return {
+                success:true,
+                message:"Sign Up was suscessful"
             }
-            // console.log(args)
-            //  usersSignUpInfoTable.insertMany({ name: args.name, emailId: args.emailId, password: args.password })
-
         },
 
         async createUserLogin(parent: any, args: any, context: any) {
@@ -60,21 +62,7 @@ export const resolvers = {
 
             const user = await usersSignUpInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
             console.log(user)
-            // const token = jwt.sign({userId:user._id})
-            // const token = jwt.sign(
-
-            //     // { userId: user._id, email: user.emailId },
-            //     // secret,
-            //     // { expiresIn: process.env.TOKEN_EXPIRY_TIME }
-            //     { userId: user._id, email: user.emailId },
-            //     secret,
-            //     { expiresIn: "5h" }
-            // );
-            // return {
-            //     token: token,
-            //     success: true,
-            //     message: 'User loggedin successfully',
-            // }
+      
             if (!user) {
 
                 return {

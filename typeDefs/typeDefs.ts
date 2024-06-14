@@ -42,6 +42,10 @@ type LoginResponse{
  message: String
  token:String
 }
+type SignUpResponse{
+ success: Boolean!
+ message: String
+}
 
 type Query{
 getUser:[signUpTable]
@@ -70,7 +74,7 @@ deadLine:String
 
 
 type Mutation{
-createUserSignUp(userSignUpParameters:createUserSignUpInput!):signUpTable
+createUserSignUp(userSignUpParameters:createUserSignUpInput!):SignUpResponse!
 createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!
 createEmployeesTask(employeesTaskParameters:createEmployeesTaskInput!):employeesTaskTable
 deleteEmployeesTask(employeeUidParameter:deleteEmployeesTaskInput!):[employeesTaskTable]
