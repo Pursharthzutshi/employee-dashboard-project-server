@@ -1,7 +1,7 @@
 import db from "../fakeData";
 import mongoose from "mongoose"
 // comn usersSignUpInfoTable from "../models/db"
-const { usersSignUpInfoTable, employeesTaskTable } = require("../models/db")
+const { usersSignUpInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
 import jwt from 'jsonwebtoken';
 
 import crypto from "crypto"
@@ -36,33 +36,38 @@ export const resolvers = {
         //     const totalGenders = await usersSignUpInfoTable.find();
         //     return totalGenders;
         // }
-        
+
     },
     Mutation: {
         createUserSignUp(parent: any, args: any, context: any) {
             console.log(args)
-            // if (args.userEmailPassword === "") {
-            //     return {
-            //         success:false,
-            //         message:"Sign Up was not suscessful"
-            //     }
-            // } 
+
             usersSignUpInfoTable.insertMany({ ...args.userSignUpParameters })
-            // context.res.send("Send")
             return {
-                success:true,
-                message:"Sign Up was suscessful"
+                success: true,
+                message: "Sign Up was suscessful"
             }
         },
-
-        async createUserLogin(parent: any, args: any, context: any) {
+        // createAdmin
+        createAdminSignUp(parent: any, args: any, context: any) {
             console.log(args)
 
-            const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
+            adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
+            return {
+                success: true,
+                message: "Admin Sign Up was suscessful"
+            }
+        },
+        async createUserLogin(parent: any, args: any, context: any) {
+            // console.log(args.uid)
+
+            // const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
             const user = await usersSignUpInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
-            console.log(user)
-      
+
+            const uid = user.uid
+            console.log(user.uid)
+
             if (!user) {
 
                 return {
@@ -78,6 +83,7 @@ export const resolvers = {
                 { expiresIn: "5h" }
             );
             return {
+                uid: uid,
                 token: token,
                 success: true,
                 message: 'User loggedin successfully',
@@ -85,8 +91,42 @@ export const resolvers = {
 
 
         },
+        async createAdminLogin(parent: any, args: any, context: any) {
+            // console.log(args.uid)
+
+            // const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
+
+            const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
+
+            const uid = admin.uid
+
+            if (!admin) {
+
+                return {
+                    success: false,
+                    message: 'Admin Email Id does not exists',
+                }
+            }
+
+            const token = jwt.sign(
+
+                { adminId: admin._id, email: admin.emailId },
+                secret,
+                { expiresIn: "5h" }
+            );
+            return {
+                uid: uid,
+                token: token,
+                success: true,
+                message: 'admin loggedin successfully',
+                admin: true
+
+            }
+
+
+        },
         createEmployeesTask(parent: any, args: any, context: any) {
-            console.log(args)
+            // console.log(args)
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 
@@ -97,15 +137,21 @@ export const resolvers = {
             return [args]
         },
         async editEmployeesTask(parent: any, args: any, context: any) {
-            console.log(args);
+            // console.log(args);
             const updateElement = await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
             return [args]
+        },
+
+        async updateSignUpStatus(parent: any, args: any, context: any) {
+            console.log(args);
+            const updateStatus = await usersSignUpInfoTable.updateMany({ uid: args.updateSignUpStatusParameter.uid }, { $set: { status: args.updateSignUpStatusParameter.status } })
+            return updateStatus
         }
 
     },
-    Subscription:{
-        showAllEmployee:{
-            subscribe:()=>{
+    Subscription: {
+        showAllEmployee: {
+            subscribe: () => {
                 return (PubSub as any).asyncIterator(`messageAdded`);
             }
         },

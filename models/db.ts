@@ -2,12 +2,26 @@
 import mongoose from "mongoose";
 
 const usersSignUpInfoSchema = new mongoose.Schema({
+    uid:String,
     name:String,
     emailId:String,
     password:String,
-    genderType:String
+    genderType:String,
+    status:Boolean,
 })
 
+const adminSignUpInfoSchema = new mongoose.Schema({
+    uid:String,
+    name:String,
+    emailId:String,
+    password:String,
+    status:Boolean,
+    adminSecretKey:String
+})
+
+const adminSecretKeySchema = new mongoose.Schema({
+    adminSecret:String,
+})
 
 const employeesTaskSchema = new mongoose.Schema({
     uid:String,
@@ -27,6 +41,10 @@ const employeesTaskSchema = new mongoose.Schema({
 
 const usersSignUpInfoTable =  mongoose.model("usersSignUpInfo",usersSignUpInfoSchema,"usersSignUpInfo")
 
+const adminSignUpInfoTable =  mongoose.model("adminSignUpInfo",adminSignUpInfoSchema,"adminSignUpInfoInfo")
+
+const adminSecretKey =  mongoose.model("adminSecretKeyInfo",adminSecretKeySchema,"adminSecretKeyInfo")
+
 const employeesTaskTable =  mongoose.model("employeesTaskInfo",employeesTaskSchema,"employeesTaskInfo")
 
-module.exports = {usersSignUpInfoTable,employeesTaskTable}
+module.exports = {usersSignUpInfoTable,adminSignUpInfoTable,adminSecretKey,employeesTaskTable}

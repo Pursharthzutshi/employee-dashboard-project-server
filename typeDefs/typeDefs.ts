@@ -2,10 +2,21 @@ import { gql } from "apollo-server";
 
 const typeDefs = gql`
 type signUpTable {
+uid:ID!
 name:String
 emailId:String
 password:String
 genderType:String
+status:Boolean
+}
+
+type adminSignUpTable {
+uid:ID!
+name:String
+emailId:String
+password:String
+status:Boolean
+adminSecretKey:String
 }
 
 type employeesTaskTable{
@@ -22,9 +33,24 @@ name:String
 emailId:String
 password:String
 genderType:String
+status:Boolean
+}
+
+input adminSignUpTableInput{
+uid:ID!
+name:String
+emailId:String
+password:String
+status:Boolean
+adminSecretKey:String
 }
 
 input createLoginInput{
+emailId:String
+password:String
+}
+
+input createAdminLoginInput{
 emailId:String
 password:String
 }
@@ -38,6 +64,7 @@ deadLine:String
 }
 
 type LoginResponse{
+ uid:ID!
  success: Boolean!
  message: String
  token:String
@@ -45,6 +72,20 @@ type LoginResponse{
 type SignUpResponse{
  success: Boolean!
  message: String
+}
+
+type adminSignUpResponse{
+ success: Boolean!
+ message: String
+}
+
+type AdminLoginResponse{
+ uid:ID!
+ success: Boolean!
+ message: String
+  token:String
+  admin:Boolean!
+
 }
 
 type Query{
@@ -56,7 +97,7 @@ showAllEmployee:[signUpTable]
 }
 
 type Subscription{
-    showAllEmployee:signUpTable
+showAllEmployee:signUpTable
 }
 
 
@@ -73,12 +114,22 @@ deadLine:String
 }
 
 
+
+input updateSignUpStatusInput{
+uid:ID!
+status:Boolean
+}
+    
+
 type Mutation{
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):SignUpResponse!
+createAdminSignUp(adminSignUpParameters:adminSignUpTableInput!):adminSignUpResponse!
 createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!
+createAdminLogin(adminLoginParameters:createAdminLoginInput!):AdminLoginResponse!
 createEmployeesTask(employeesTaskParameters:createEmployeesTaskInput!):employeesTaskTable
 deleteEmployeesTask(employeeUidParameter:deleteEmployeesTaskInput!):[employeesTaskTable]
 editEmployeesTask(editEmployeesTaskParameter:editEmployeesTaskInput!):[employeesTaskTable]
+updateSignUpStatus(updateSignUpStatusParameter:updateSignUpStatusInput!):[signUpTable]
 }
 `
 export default typeDefs
