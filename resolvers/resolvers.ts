@@ -41,14 +41,14 @@ export const resolvers = {
     Mutation: {
         createUserSignUp(parent: any, args: any, context: any) {
             console.log(args)
-         
+
 
             usersSignUpInfoTable.insertMany({ ...args.userSignUpParameters })
             return {
                 success: true,
                 message: "Sign Up was suscessful"
             }
-    
+
         },
         // createAdmin
         createAdminSignUp(parent: any, args: any, context: any) {
@@ -129,7 +129,7 @@ export const resolvers = {
         },
         createEmployeesTask(parent: any, args: any, context: any) {
             // console.log(args)
-            
+
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 

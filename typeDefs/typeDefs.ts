@@ -8,6 +8,7 @@ emailId:String
 password:String
 genderType:String
 status:Boolean
+department:String
 }
 
 type adminSignUpTable {
@@ -34,6 +35,7 @@ emailId:String
 password:String
 genderType:String
 status:Boolean
+department:String
 }
 
 input adminSignUpTableInput{

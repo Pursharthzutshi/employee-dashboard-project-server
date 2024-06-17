@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import { ApolloServer } from "apollo-server-express";
 import typeDefs from "../server/typeDefs/typeDefs";
 import resolvers from "../server/resolvers/resolvers";
-const app:any = express();
+const app: any = express();
 const port = 3002;
 import { PubSub } from 'graphql-subscriptions';
 
@@ -17,7 +17,7 @@ const pubsub = new PubSub()
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context:{pubsub}
+    context: { pubsub }
     // context:()=>{
     //     return{name:"Pursharth"}
     // }
@@ -29,12 +29,12 @@ const server = new ApolloServer({
 
 async function startApolloServer() {
     await server.start();
-    server.applyMiddleware({app});
+    server.applyMiddleware({ app });
 }
 
 startApolloServer()
 
 
-app.listen(port,()=>{
+app.listen(port, () => {
     console.log(`${port} is running`);
 })
