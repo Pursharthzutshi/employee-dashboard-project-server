@@ -106,7 +106,7 @@ uid:ID!
 }
 
 input editEmployeesTaskInput{
-uid:ID
+uid:ID!
 name:String
 emailId:[String]
 taskDesc:String
