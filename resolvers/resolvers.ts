@@ -128,7 +128,7 @@ export const resolvers = {
 
         },
         createEmployeesTask(parent: any, args: any, context: any) {
-            // console.log(args)
+            console.log(args)
 
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
