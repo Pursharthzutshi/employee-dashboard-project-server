@@ -9,6 +9,7 @@ password:String
 genderType:String
 status:Boolean
 department:String
+employeeOfTheMonth:Boolean
 }
 
 type adminSignUpTable {
@@ -36,6 +37,8 @@ password:String
 genderType:String
 status:Boolean
 department:String
+employeeOfTheMonth:Boolean
+
 }
 
 input adminSignUpTableInput{
@@ -122,8 +125,13 @@ uid:ID!
 status:Boolean
 }
     
+input updateEmployeeOfTheMonthInput{
+uid:ID!
+employeeOfTheMonth:Boolean!
+}
 
 type Mutation{
+updateEmployeeOfTheMonth(updateEmployeeOfTheMonthParameters:updateEmployeeOfTheMonthInput!):[signUpTable]
 createUserSignUp(userSignUpParameters:createUserSignUpInput!):SignUpResponse!
 createAdminSignUp(adminSignUpParameters:adminSignUpTableInput!):adminSignUpResponse!
 createUserLogin(userLoginParameters:createLoginInput!):LoginResponse!

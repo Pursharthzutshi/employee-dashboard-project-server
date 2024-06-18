@@ -1,7 +1,7 @@
 import db from "../fakeData";
 import mongoose from "mongoose"
-// comn usersSignUpInfoTable from "../models/db"
-const { usersSignUpInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
+// comn employeesAccountInfoTable from "../models/db"
+const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
 import jwt from 'jsonwebtoken';
 
 import crypto from "crypto"
@@ -22,18 +22,18 @@ export const resolvers = {
             return employeesDetails
         },
         async fetchEmailUsersIds(parent: any, args: any, context: any) {
-            const users = await usersSignUpInfoTable.find()
+            const users = await employeesAccountInfoTable.find()
             console.log(parent)
             return users
         },
 
         async showAllEmployee(parent: any, args: any, context: any) {
-            const allEmployees = await usersSignUpInfoTable.find();
+            const allEmployees = await employeesAccountInfoTable.find();
             return allEmployees
         },
 
         // async genderTypeChartDataCount(parent: any, args: any, context: any){
-        //     const totalGenders = await usersSignUpInfoTable.find();
+        //     const totalGenders = await employeesAccountInfoTable.find();
         //     return totalGenders;
         // }
 
@@ -43,7 +43,7 @@ export const resolvers = {
             console.log(args)
 
 
-            usersSignUpInfoTable.insertMany({ ...args.userSignUpParameters })
+            employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
             return {
                 success: true,
                 message: "Sign Up was suscessful"
@@ -63,9 +63,9 @@ export const resolvers = {
         async createUserLogin(parent: any, args: any, context: any) {
             // console.log(args.uid)
 
-            // const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
+            // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
-            const user = await usersSignUpInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
+            const user = await employeesAccountInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
 
             const uid = user.uid
             console.log(user.uid)
@@ -96,7 +96,7 @@ export const resolvers = {
         async createAdminLogin(parent: any, args: any, context: any) {
             // console.log(args.uid)
 
-            // const checkExistingEmailId = await usersSignUpInfoTable.find({ emailId: args.userLoginParameters.emailId })
+            // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
 
@@ -124,8 +124,12 @@ export const resolvers = {
                 admin: true
 
             }
-
-
+        },
+        async updateEmployeeOfTheMonth(parent: any, args: any, context: any) {
+            console.log(args)
+            const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth:args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth }})
+            
+            return updateEmployeeOfTheMonthStatus
         },
         createEmployeesTask(parent: any, args: any, context: any) {
             console.log(args)
@@ -147,7 +151,7 @@ export const resolvers = {
 
         async updateSignUpStatus(parent: any, args: any, context: any) {
             console.log(args);
-            const updateStatus = await usersSignUpInfoTable.updateMany({ uid: args.updateSignUpStatusParameter.uid }, { $set: { status: args.updateSignUpStatusParameter.status } })
+            const updateStatus = await employeesAccountInfoTable.updateMany({ uid: args.updateSignUpStatusParameter.uid }, { $set: { status: args.updateSignUpStatusParameter.status } })
             return updateStatus
         }
 
