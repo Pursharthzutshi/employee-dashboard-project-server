@@ -116,15 +116,29 @@ export const resolvers = {
             }
         },
         async updateEmployeeOfTheMonth(parent: undefined, args: { updateEmployeeOfTheMonthParameters: { uid: String; employeeOfTheMonth: Boolean; }; }) {
-            console.log(args)
+            // console.log(args)
+
+            const findAlreadyExistingEmployeeOfTheMonth = await employeesAccountInfoTable.findOne({employeeOfTheMonth:true})
+            // console.log(findAlreadyExistingEmployeeOfTheMonth)
+
+            if(findAlreadyExistingEmployeeOfTheMonth){
+                await employeesAccountInfoTable.updateOne({ employeeOfTheMonth:true }, { $set: { employeeOfTheMonth:false} })
+            }
             const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth: args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth } })
 
             return updateEmployeeOfTheMonthStatus
         },
         createEmployeesTask(parent: undefined, args: { employeesTaskParameters: createEmployeesTaskProps; }) {
             console.log(args)
-            // console.log(parent)
-
+            // if(args.employeesTaskParameters.name = ""){
+            //     return      {
+            //         success: false,
+            //         message: 'admin loggedin successfully',
+            //         admin: true
+    
+            //     }
+            // }
+            
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 

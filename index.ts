@@ -5,7 +5,7 @@ import resolvers from "../server/resolvers/resolvers";
 import { PubSub } from 'graphql-subscriptions';
 
 const app: any = express();
-const port = 3002;
+const port = 3003;
 
 const pubsub = new PubSub()
 
