@@ -16,3 +16,12 @@ export type createEmployeesTaskProps = {
     taskDesc: String
     deadLine: String
 }
+
+export type adminSignUpProps = {
+    uid: String
+    name: String
+    emailId: String
+    password: String
+    status: Boolean
+    adminSecretKey: String
+  }

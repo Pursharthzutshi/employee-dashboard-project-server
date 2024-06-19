@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 import { PubSub, PubSubEngine } from "graphql-subscriptions";
-import { createEmployeesTaskProps, createUserSignUpProps } from "../resolvers-types/resolvers-type";
+import { adminSignUpProps, createEmployeesTaskProps, createUserSignUpProps } from "../resolvers-types/resolvers-type";
 
 const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
 const secret = crypto.randomBytes(64).toString('hex');
@@ -31,18 +31,41 @@ export const resolvers = {
     },
     Mutation: {
 
-        createUserSignUp(parent: undefined, args: { userSignUpParameters: createUserSignUpProps; }) {
-            console.log(args)
-            employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
-            return {
-                success: true,
-                message: "Sign Up was suscessful"
+        async createUserSignUp(parent: undefined, args: { userSignUpParameters: createUserSignUpProps; }) {
+            console.log(args.userSignUpParameters)
+            const existingEmailId = await employeesAccountInfoTable.findOne({ emailId: args.userSignUpParameters.emailId })
+
+            const checkEmptyFields = args.userSignUpParameters.emailId === "" || args.userSignUpParameters.name === "" ||
+                args.userSignUpParameters.genderType === "" || args.userSignUpParameters.department === ""
+
+            if (checkEmptyFields) {
+                return {
+                    success: false,
+                    message: "Please Fill Up the form"
+                }
+            } else if (existingEmailId) {
+                return {
+                    success: false,
+                    message: "Email ID already Exists"
+                }
+            } else {
+                employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
+                return {
+                    success: true,
+                    message: "Sign Up was suscessful"
+                }
             }
+
+
 
         },
         // createAdmin
-        createAdminSignUp(parent: undefined, args: { adminSignUpParameters: any; }) {
-            console.log(args)
+        createAdminSignUp(parent: undefined, args: { adminSignUpParameters: adminSignUpProps; }) {
+            // console.log(args.adminSignUpParameters)
+            // if(args.adminSignUpParameters)
+            console.log(args.adminSignUpParameters)
+
+
 
             adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
             return {
@@ -75,12 +98,6 @@ export const resolvers = {
                     message: 'Password Incorrect',
                 }
             } else {
-                console.log(user)
-                console.log(user.emailId)
-                console.log(args.userLoginParameters.emailId)
-
-                console.log(user.password)
-                console.log(args.userLoginParameters.password)
 
                 const uid = user.uid
 
@@ -103,7 +120,6 @@ export const resolvers = {
         },
         async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }) {
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
-
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
 
@@ -131,12 +147,6 @@ export const resolvers = {
                     secret,
                     { expiresIn: "5h" }
                 );
-                // uid:ID!
-                // success: Boolean!
-                // message: String
-                //  token:String
-                //  admin:Boolean!
-
                 return {
                     uid: uid,
                     name: admin.name,
