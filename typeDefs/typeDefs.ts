@@ -69,9 +69,10 @@ deadLine:String
 }
 
 type LoginResponse{
- uid:ID!
+ uid:ID
+ name:String
  success: Boolean!
- message: String
+ message: String!
  token:String
 }
 type SignUpResponse{
@@ -85,11 +86,12 @@ type adminSignUpResponse{
 }
 
 type AdminLoginResponse{
- uid:ID!
+ uid:ID
+ name:String
  success: Boolean!
- message: String
+ message: String!
   token:String
-  admin:Boolean!
+  admin:Boolean
 
 }
 

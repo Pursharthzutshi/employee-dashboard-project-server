@@ -28,9 +28,9 @@ export const resolvers = {
         },
 
 
-
     },
     Mutation: {
+
         createUserSignUp(parent: undefined, args: { userSignUpParameters: createUserSignUpProps; }) {
             console.log(args)
             employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
@@ -50,79 +50,113 @@ export const resolvers = {
                 message: "Admin Sign Up was suscessful"
             }
         },
-        async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String; }; }) {
-            console.log(args)
+
+        // async showWelcomeLogin(parent:undefined,args:any){
+
+        // },
+
+        async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String, password: String }; }) {
 
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
             const user = await employeesAccountInfoTable.findOne({ emailId: args.userLoginParameters.emailId })
 
-            const uid = user.uid
-            console.log(user.uid)
-
+            console.log(user)
             if (!user) {
 
                 return {
                     success: false,
                     message: 'User Email Id does not exists',
                 }
-            }
 
-            const token = jwt.sign(
+            } else if (user.password !== args.userLoginParameters.password) {
+                return {
+                    success: false,
+                    message: 'Password Incorrect',
+                }
+            } else {
+                console.log(user)
+                console.log(user.emailId)
+                console.log(args.userLoginParameters.emailId)
 
-                { userId: user._id, email: user.emailId },
-                secret,
-                { expiresIn: "5h" }
-            );
-            return {
-                uid: uid,
-                token: token,
-                success: true,
-                message: 'User loggedin successfully',
+                console.log(user.password)
+                console.log(args.userLoginParameters.password)
+
+                const uid = user.uid
+
+                const token = jwt.sign(
+
+                    { userId: user._id, name: user.name, email: user.emailId },
+                    secret,
+                    { expiresIn: "5h" }
+                );
+                return {
+                    uid: uid,
+                    name: user.name,
+                    token: token,
+                    success: true,
+                    message: 'User loggedin successfully',
+                }
             }
 
 
         },
-        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String; }; }) {
-            // console.log(args.uid)
+        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String, password: String }; }) {
+            // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.adminLoginParameters.emailId })
 
-            // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
             const admin = await adminSignUpInfoTable.findOne({ emailId: args.adminLoginParameters.emailId })
 
-            const uid = admin.uid
-
+            console.log(admin)
             if (!admin) {
 
                 return {
                     success: false,
                     message: 'Admin Email Id does not exists',
+
                 }
-            }
+            } else if (admin.password !== args.adminLoginParameters.password) {
+                return {
+                    success: false,
+                    message: 'Password Incorrect',
 
-            const token = jwt.sign(
+                }
+            } else {
 
-                { adminId: admin._id, email: admin.emailId },
-                secret,
-                { expiresIn: "5h" }
-            );
-            return {
-                uid: uid,
-                token: token,
-                success: true,
-                message: 'admin loggedin successfully',
-                admin: true
+                const uid = admin.uid
+
+                const token = jwt.sign(
+
+                    { adminId: admin._id, name: admin.name, email: admin.emailId },
+                    secret,
+                    { expiresIn: "5h" }
+                );
+                // uid:ID!
+                // success: Boolean!
+                // message: String
+                //  token:String
+                //  admin:Boolean!
+
+                return {
+                    uid: uid,
+                    name: admin.name,
+                    success: true,
+                    message: 'admin loggedin successfully',
+                    token: token,
+                    admin: true
+
+                }
 
             }
         },
         async updateEmployeeOfTheMonth(parent: undefined, args: { updateEmployeeOfTheMonthParameters: { uid: String; employeeOfTheMonth: Boolean; }; }) {
             // console.log(args)
 
-            const findAlreadyExistingEmployeeOfTheMonth = await employeesAccountInfoTable.findOne({employeeOfTheMonth:true})
+            const findAlreadyExistingEmployeeOfTheMonth = await employeesAccountInfoTable.findOne({ employeeOfTheMonth: true })
             // console.log(findAlreadyExistingEmployeeOfTheMonth)
 
-            if(findAlreadyExistingEmployeeOfTheMonth){
-                await employeesAccountInfoTable.updateOne({ employeeOfTheMonth:true }, { $set: { employeeOfTheMonth:false} })
+            if (findAlreadyExistingEmployeeOfTheMonth) {
+                await employeesAccountInfoTable.updateOne({ employeeOfTheMonth: true }, { $set: { employeeOfTheMonth: false } })
             }
             const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth: args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth } })
 
@@ -135,10 +169,10 @@ export const resolvers = {
             //         success: false,
             //         message: 'admin loggedin successfully',
             //         admin: true
-    
+
             //     }
             // }
-            
+
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 
