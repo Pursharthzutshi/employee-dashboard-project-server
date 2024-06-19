@@ -9,7 +9,7 @@ const employeesAccountInfoSchema = new mongoose.Schema({
     genderType: String,
     status: Boolean,
     department: String,
-    employeeOfTheMonth:Boolean
+    employeeOfTheMonth: Boolean
 })
 
 const adminSignUpInfoSchema = new mongoose.Schema({
@@ -30,7 +30,7 @@ const employeesTaskSchema = new mongoose.Schema({
     name: String,
     emailId: {
         type: [String],
-        ref: "usersSignUpInfo"
+        ref: "employeesAccountInfoTable"
     },
     taskDesc: String,
     deadLine: String,

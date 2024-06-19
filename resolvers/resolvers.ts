@@ -1,12 +1,10 @@
-import db from "../fakeData";
 import mongoose from "mongoose"
-// comn employeesAccountInfoTable from "../models/db"
-const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
 import jwt from 'jsonwebtoken';
-
 import crypto from "crypto"
-import { PubSub } from "graphql-subscriptions";
+import { PubSub, PubSubEngine } from "graphql-subscriptions";
+import { createEmployeesTaskProps, createUserSignUpProps } from "../resolvers-types/resolvers-type";
 
+const { employeesAccountInfoTable, employeesTaskTable, adminSignUpInfoTable } = require("../models/db")
 const secret = crypto.randomBytes(64).toString('hex');
 
 mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb.net/Dashboard?retryWrites=true&w=majority`).then((res) => {
@@ -15,34 +13,26 @@ mongoose.connect(`mongodb+srv://13phzi:BGbeXfcV4dp9LX4G@cluster0.m8wabkl.mongodb
 
 export const resolvers = {
     Query: {
-
-
-        async fetchEmployeesTaskDetails(parent: any, args: any, context: any) {
+        async fetchEmployeesTaskDetails() {
             const employeesDetails = await employeesTaskTable.find();
             return employeesDetails
         },
-        async fetchEmailUsersIds(parent: any, args: any, context: any) {
+        async fetchEmailUsersIds() {
             const users = await employeesAccountInfoTable.find()
-            console.log(parent)
             return users
         },
 
-        async showAllEmployee(parent: any, args: any, context: any) {
+        async showAllEmployee() {
             const allEmployees = await employeesAccountInfoTable.find();
             return allEmployees
         },
 
-        // async genderTypeChartDataCount(parent: any, args: any, context: any){
-        //     const totalGenders = await employeesAccountInfoTable.find();
-        //     return totalGenders;
-        // }
+
 
     },
     Mutation: {
-        createUserSignUp(parent: any, args: any, context: any) {
+        createUserSignUp(parent: undefined, args: { userSignUpParameters: createUserSignUpProps; }) {
             console.log(args)
-
-
             employeesAccountInfoTable.insertMany({ ...args.userSignUpParameters })
             return {
                 success: true,
@@ -51,7 +41,7 @@ export const resolvers = {
 
         },
         // createAdmin
-        createAdminSignUp(parent: any, args: any, context: any) {
+        createAdminSignUp(parent: undefined, args: { adminSignUpParameters: any; }) {
             console.log(args)
 
             adminSignUpInfoTable.insertMany({ ...args.adminSignUpParameters })
@@ -60,8 +50,8 @@ export const resolvers = {
                 message: "Admin Sign Up was suscessful"
             }
         },
-        async createUserLogin(parent: any, args: any, context: any) {
-            // console.log(args.uid)
+        async createUserLogin(parent: undefined, args: { userLoginParameters: { emailId: String; }; }) {
+            console.log(args)
 
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
 
@@ -93,7 +83,7 @@ export const resolvers = {
 
 
         },
-        async createAdminLogin(parent: any, args: any, context: any) {
+        async createAdminLogin(parent: undefined, args: { adminLoginParameters: { emailId: String; }; }) {
             // console.log(args.uid)
 
             // const checkExistingEmailId = await employeesAccountInfoTable.find({ emailId: args.userLoginParameters.emailId })
@@ -125,31 +115,33 @@ export const resolvers = {
 
             }
         },
-        async updateEmployeeOfTheMonth(parent: any, args: any, context: any) {
+        async updateEmployeeOfTheMonth(parent: undefined, args: { updateEmployeeOfTheMonthParameters: { uid: String; employeeOfTheMonth: Boolean; }; }) {
             console.log(args)
-            const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth:args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth }})
-            
+            const updateEmployeeOfTheMonthStatus = await employeesAccountInfoTable.updateOne({ uid: args.updateEmployeeOfTheMonthParameters.uid }, { $set: { employeeOfTheMonth: args.updateEmployeeOfTheMonthParameters.employeeOfTheMonth } })
+
             return updateEmployeeOfTheMonthStatus
         },
-        createEmployeesTask(parent: any, args: any, context: any) {
+        createEmployeesTask(parent: undefined, args: { employeesTaskParameters: createEmployeesTaskProps; }) {
             console.log(args)
+            // console.log(parent)
 
             return employeesTaskTable.insertMany({ ...args.employeesTaskParameters })
         },
 
 
-        async deleteEmployeesTask(parent: any, args: any, context: any) {
+        async deleteEmployeesTask(parent: undefined, args: { employeeUidParameter: { uid: String; }; }) {
+            // console.log(parent)
             console.log(args.employeeUidParameter.uid)
             const deleteElement = await employeesTaskTable.deleteOne({ uid: args.employeeUidParameter.uid })
             return [args]
         },
-        async editEmployeesTask(parent: any, args: any, context: any) {
-            // console.log(args);
+        async editEmployeesTask(parent: undefined, args: { editEmployeesTaskParameter: { uid: String; }; }) {
+            console.log(args);
             const updateElement = await employeesTaskTable.updateOne({ uid: args.editEmployeesTaskParameter.uid }, { $set: { ...args.editEmployeesTaskParameter } })
             return [args]
         },
 
-        async updateSignUpStatus(parent: any, args: any, context: any) {
+        async updateSignUpStatus(parent: undefined, args: { updateSignUpStatusParameter: { uid: String; status: Boolean; }; }) {
             console.log(args);
             const updateStatus = await employeesAccountInfoTable.updateMany({ uid: args.updateSignUpStatusParameter.uid }, { $set: { status: args.updateSignUpStatusParameter.status } })
             return updateStatus
@@ -159,7 +151,7 @@ export const resolvers = {
     Subscription: {
         showAllEmployee: {
             subscribe: () => {
-                return (PubSub as any).asyncIterator(`messageAdded`);
+                return (PubSub as unknown as PubSubEngine).asyncIterator(`messageAdded`);
             }
         },
     }

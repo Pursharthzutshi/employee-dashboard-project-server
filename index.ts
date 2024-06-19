@@ -1,10 +1,11 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Express } from 'express';
 import { ApolloServer } from "apollo-server-express";
 import typeDefs from "../server/typeDefs/typeDefs";
 import resolvers from "../server/resolvers/resolvers";
+import { PubSub } from 'graphql-subscriptions';
+
 const app: any = express();
 const port = 3002;
-import { PubSub } from 'graphql-subscriptions';
 
 const pubsub = new PubSub()
 
@@ -18,13 +19,6 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: { pubsub }
-    // context:()=>{
-    //     return{name:"Pursharth"}
-    // }
-    // context:{
-    //     PubSub,
-    // }
-    // context:({req,res})=>({req,res})
 })
 
 async function startApolloServer() {
